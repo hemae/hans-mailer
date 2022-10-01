@@ -107,7 +107,7 @@ export default class Mailer {
 
     private async _sendEmail(): Promise<void> {
         try {
-            log.info(`User is ${this._user} sands email to ${this._emailTo}`)
+            log.info(`User is ${this._user} sends email to ${(this._appMode === 'development' && this._devTestEmail) ? this._devTestEmail : (this._emailTo || this._devTestEmail!)}`)
             await this._implementEmail()
         } catch (error: any) {
             log.error(error)

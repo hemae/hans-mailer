@@ -1,6 +1,6 @@
 {
   "name": "hans-mailer",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "nodemailer wrapper",
   "main": "lib/index.js",
   "repository": "git@github.com:hemae/hans-mailer.git",
