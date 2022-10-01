@@ -21,7 +21,6 @@ export default class Mailer {
     private _emailName: string | null
     private _emailHTMLOptions: Record<string, any> | void | null
     private _transportHeaders: Record<string, string> = {}
-    private _html: HTMLString | null
     private _mailSubjects: Record<string, string> | null
     private _emailHTMLs: Record<string, (options: Record<string, any> | void) => HTMLString> | null
     private _devTestEmail: string | null
@@ -43,7 +42,6 @@ export default class Mailer {
 
         this._emailHTMLs = null
         this._mailSubjects = null
-        this._html = null
         this._devTestEmail = null
         this._emailName = null
         this._emailHTMLOptions = null
@@ -95,10 +93,10 @@ export default class Mailer {
         )
     }
 
-    private _getHTML(): HTMLString | undefined {
+    private _getHTML(): HTMLString | null {
         if (!this._emailName) throw new Error('"emailName" is not defined, use method "setTargetEmailName"')
         if (this._emailHTMLOptions === null) throw new Error('"emailHTMLOptions" is not defined, use method "setEmailOptions"')
-        return this._emailHTMLs?.[this._emailName](this._emailHTMLOptions)
+        return this._emailHTMLs?.[this._emailName]?.(this._emailHTMLOptions) || null
     }
 
     private _getSubject(): string | undefined {
@@ -118,12 +116,13 @@ export default class Mailer {
     }
 
     private async _implementEmail(): Promise<void> {
-        if (this._html === null) throw new Error('"html" or "emailName" is not defined, use method "setTargetEmailName"')
+        const html = this._getHTML()
+        if (html === null) throw new Error('"html" or "emailName" is not defined, use method "setTargetEmailName"')
         if (!this._emailTo && !this._devTestEmail) throw new Error('"email to" is not defined, use method "setEmailTo" or "setTestEmail"')
         await this._getTransport().sendMail({
             to: (this._appMode === 'development' && this._devTestEmail) ? this._devTestEmail : (this._emailTo || this._devTestEmail!),
             subject: this._getSubject() || 'Without subject',
-            html: this._html
+            html
         })
     }
 }
